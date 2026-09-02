@@ -1,0 +1,11 @@
+# Check your AWS identity
+aws sts get-caller-identity
+
+# List local S3 buckets
+aws --endpoint-url=http://localhost:4566 s3 ls
+
+# Create a local S3 bucket
+aws --endpoint-url=http://localhost:4566 s3 mb s3://mybucket
+
+# Delete a local S3 bucket
+aws --endpoint-url=http://localhost:4566 s3 rb s3://mybucket

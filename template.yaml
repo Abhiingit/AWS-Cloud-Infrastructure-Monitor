@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+  CloudFormation practical - deploy an EC2 instance and S3 bucket.
+
+Parameters:
+
+  InstanceType:
+    Type: String
+    Default: t3.micro
+    Description: EC2 instance type
+
+  EnvironmentName:
+    Type: String
+    Default: cloud-practical
+    Description: Environment name
+
+Resources:
+
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+
+    Properties:
+
+      InstanceType: !Ref InstanceType
+
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}'
+
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-EC2'
+
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+
+    Properties:
+
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-S3'
+
+Outputs:
+
+  EC2InstanceId:
+    Description: EC2 instance ID
+    Value: !Ref MyEC2Instance
+
+  S3BucketName:
+    Description: S3 bucket name
+    Value: !Ref MyS3Bucket

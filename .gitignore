@@ -1,0 +1,22 @@
+# AWS credentials and keys
+*.csv
+*.pem
+.aws/
+credentials
+config
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Python
+__pycache__/
+*.pyc
+tempCodeRunnerFile.py
+
+# Environment/secrets
+.env
+.env.*
