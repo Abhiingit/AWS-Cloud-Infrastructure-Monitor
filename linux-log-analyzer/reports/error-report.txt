@@ -1,0 +1,29 @@
+LINUX SERVER LOG ANALYSIS REPORT
+================================
+
+Dataset: data/server.log
+Total Requests: 93
+
+HTTP STATUS SUMMARY
+-------------------
+     69 200
+     11 404
+      7 500
+      6 401
+
+TOP ERROR-GENERATING IP
+-----------------------
+      4 192.168.1.17
+      3 192.168.1.18
+      3 192.168.1.14
+      3 192.168.1.12
+      3 192.168.1.11
+
+TOP ERROR-ENDPOINTS
+-------------------
+      7 /products/999
+      7 /checkout
+      6 /login
+      3 /unknown
+      1 /favicon.ico
+
