@@ -1,537 +1,332 @@
-# AWS Cloud Practicals ☁️
+# AWS Cloud Infrastructure Monitor
 
-A hands-on collection of AWS, Python, Boto3, Docker, Terraform, CloudFormation, LocalStack, monitoring, load-balancing, and cloud cost-management practicals.
+A Python-based AWS infrastructure monitoring tool that collects operational and cost information from AWS services and produces consolidated console and JSON reports.
 
-## Overview
+## What It Does
 
-This repository documents my practical AWS and cloud-computing learning journey through hands-on exercises covering cloud services, automation, Infrastructure as Code, containers, monitoring, cost management, and version control.
+The monitor collects:
 
-## Technologies
-
-- AWS
-- Python 3.13
-- Boto3
-- Docker
-- Flask
-- Terraform
-- AWS CloudFormation
-- LocalStack
-- Git & GitHub
-- PowerShell
-
-## Repository Structure
+- EC2 instance counts and states
+- S3 bucket count
+- RDS database instance states
+- CloudWatch alarm states
+- AWS Cost Explorer month-to-date cost
+- An overall infrastructure health status
 
 ```text
-aws-cloud-practicals/
-├── alb-practical/
-│   ├── load_balancer.py
-│   ├── server1.py
-│   ├── server2.py
-│   └── target_health.py
-├── backup-folder/
-│   ├── test1.txt
-│   └── test2.txt
-├── docker-practical/
-│   ├── Dockerfile
-│   ├── app.py
-│   └── requirements.txt
-├── terraform-practical/
-│   ├── main.tf
-│   ├── terraform_output.py
-│   └── .terraform.lock.hcl
-├── backup_s3.py
-├── cloud_oop.py
-├── cloudwatch.py
-├── cost_report.py
-├── ec2_control.py
-├── ec2_test.py
-├── list_buckets.py
-├── list_ec2.py
-├── start_ec2.py
-├── stop_ec2.py
-├── template.yaml
-├── testingapi.py
-├── cmdpromtsforaws.txt
-├── test.txt
-├── .gitignore
-└── README.md
+                    AWS Account
+                         |
+                         v
+              +-------------------+
+              |  Python + Boto3   |
+              +-------------------+
+                 |   |   |   |   |
+                 v   v   v   v   v
+                EC2 S3 RDS CW Cost
+                 |   |   |   |   |
+                 +---+---+---+---+
+                         |
+                         v
+              +-------------------+
+              | Infrastructure    |
+              | Report / Health   |
+              +-------------------+
+                    |        |
+                    v        v
+                 Console    JSON
 ```
 
-## Practicals
+## AWS Services
 
-### 1. Amazon EC2
+| Service | Purpose |
+|---|---|
+| EC2 | Count instances and classify states |
+| S3 | Count buckets |
+| RDS | Count database instances and classify status |
+| CloudWatch | Inspect alarm states |
+| Cost Explorer | Calculate month-to-date cost |
+| IAM | Provide least-privilege read access |
 
-Hands-on work with EC2 and Python/Boto3 automation.
-
-**Topics**
-- Listing EC2 instances
-- Starting and stopping instances
-- Basic EC2 control
-- Programmatic interaction with AWS
-
-**Files**
-- `list_ec2.py`
-- `start_ec2.py`
-- `stop_ec2.py`
-- `ec2_control.py`
-- `ec2_test.py`
-
-**Concept**
+## Project Structure
 
 ```text
-Python → Boto3 → AWS EC2 API → EC2
+AWS-Cloud-Infrastructure-Monitor/
+│
+├── monitor/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── health.py
+│   ├── main.py
+│   ├── models.py
+│   ├── aws/
+│   │   ├── __init__.py
+│   │   ├── ec2.py
+│   │   ├── s3.py
+│   │   ├── rds.py
+│   │   ├── cloudwatch.py
+│   │   └── costs.py
+│   └── reports/
+│       ├── __init__.py
+│       ├── console.py
+│       └── json_report.py
+│
+├── tests/
+│   └── test_monitor.py
+├── policies/
+│   └── monitor-readonly.json
+├── Dockerfile
+├── .dockerignore
+├── requirements.txt
+├── requirements-dev.txt
+├── pytest.ini
+└── labs/
+    └── ...
 ```
 
-### 2. Amazon S3
+Older AWS/cloud practicals are intended to live under `labs/`, keeping them separate from this main portfolio application.
 
-Practical work with S3 buckets, objects, and backup automation.
+## Requirements
 
-**Topics**
-- Listing S3 buckets
-- Working with S3 objects
-- Uploading files
-- Backup automation with Python and Boto3
+- Python 3.10+
+- AWS CLI
+- AWS account and configured credentials
+- Docker (optional)
 
-**Files**
-- `list_buckets.py`
-- `backup_s3.py`
+Install runtime dependencies:
 
-Sample backup files are stored in `backup-folder/`.
+```powershell
+pip install -r requirements.txt
+```
 
-### 3. Amazon CloudWatch
+Install development dependencies:
 
-Practical work with AWS monitoring using Python and Boto3.
+```powershell
+pip install -r requirements-dev.txt
+```
 
-**Topics**
-- CloudWatch
-- AWS metrics
-- Monitoring concepts
-- Programmatic access to monitoring data
+## AWS Authentication
 
-**File**
-- `cloudwatch.py`
+Check the active AWS identity:
 
-### 4. AWS Cost Management
+```powershell
+aws sts get-caller-identity
+```
 
-Practical work with AWS Cost Explorer and service-level cost reporting.
+The application defaults to `ap-south-1`.
 
-**Topics**
-- Cost Explorer API
-- Retrieving AWS spending data
-- Grouping costs by AWS service
-- Generating cost reports with Python and Boto3
+You can change the region with:
 
-**File**
-- `cost_report.py`
+```powershell
+$env:AWS_REGION="ap-south-1"
+```
 
-**Concept**
+## IAM Permissions
+
+The project includes:
 
 ```text
-Python → Boto3 → Cost Explorer API → AWS Cost Data → Report
+policies/monitor-readonly.json
 ```
 
-### 5. Application Load Balancer Concepts
-
-A local load-balancing practical using Python and LocalStack.
-
-**Topics**
-- Load balancing
-- Backend servers
-- Request forwarding
-- Target health
-- Local AWS service simulation
-
-**Directory**
-- `alb-practical/`
-
-**Files**
-- `load_balancer.py`
-- `server1.py`
-- `server2.py`
-- `target_health.py`
-
-**Architecture**
+The monitor currently requires only:
 
 ```text
-             Client
-                |
-                v
-       +----------------+
-       | Load Balancer  |
-       +-------+--------+
-               |
-         +-----+-----+
-         |           |
-         v           v
-     Server 1     Server 2
+ec2:DescribeInstances
+s3:ListAllMyBuckets
+rds:DescribeDBInstances
+cloudwatch:DescribeAlarms
+ce:GetCostAndUsage
 ```
 
-LocalStack is used for suitable AWS simulation to avoid unnecessary AWS infrastructure costs.
+This keeps the monitoring permissions read-only and narrowly scoped to the APIs used by the application.
 
-### 6. Docker
+## Run the Monitor
 
-Hands-on Docker work performed locally.
+From the repository root:
 
-**Topics**
-- Images
-- Containers
-- Dockerfiles
-- Building images
-- Running containers
-- Container logs
-- Image inspection
-- Port mapping
-- Dockerizing Python applications
+```powershell
+python -m monitor.main
+```
 
-**Directory**
-- `docker-practical/`
-
-#### Python Docker Application
-
-The project includes a simple Python application that prints:
+The application collects AWS data, evaluates health, prints a report, and writes:
 
 ```text
-Hello from Docker!
-My Cloud Journey - Docker Practical
+monitor/reports/latest.json
 ```
 
-Build:
+The generated report is ignored by Git.
 
-```bash
-docker build -t cloud-python-app .
-```
+## Example Output
 
-Run:
-
-```bash
-docker run cloud-python-app
-```
-
-View containers:
-
-```bash
-docker ps -a
-```
-
-View logs:
-
-```bash
-docker logs <CONTAINER_ID>
-```
-
-Inspect the image:
-
-```bash
-docker image inspect cloud-python-app
-```
-
-#### Flask + Docker
-
-A Flask web application was also containerized and tested locally.
-
-The application runs on port `5000` and returns:
+A real test run produced:
 
 ```text
-Hello from Flask + Docker!
+AWS CLOUD INFRASTRUCTURE MONITOR
+==================================================
+
+Region        : ap-south-1
+Overall Status: ATTENTION REQUIRED
+
+EC2
+--------------------------------------------------
+Total instances : 0
+Running         : 0
+Stopped         : 0
+Other states    : 0
+
+S3
+--------------------------------------------------
+Buckets         : 3
+
+RDS
+--------------------------------------------------
+Total instances : 0
+Available       : 0
+Other states    : 0
+
+CloudWatch Alarms
+--------------------------------------------------
+Total             : 1
+OK                : 0
+ALARM             : 0
+Insufficient data : 1
+
+AWS Cost
+--------------------------------------------------
+Month-to-date    : $0.00
 ```
 
-Build:
+In that run, `ATTENTION REQUIRED` was produced because a CloudWatch alarm was in `INSUFFICIENT_DATA`.
 
-```bash
-docker build -t flask-docker-app .
+## Health Logic
+
+The current implementation reports `ATTENTION REQUIRED` when:
+
+- a CloudWatch alarm is `ALARM`
+- a CloudWatch alarm is `INSUFFICIENT_DATA`
+- an RDS instance has a status other than `available`
+
+Otherwise it reports `HEALTHY`.
+
+## Testing
+
+Run the test suite:
+
+```powershell
+pytest -q
 ```
 
-Run:
+Run linting:
 
-```bash
-docker run -p 5000:5000 flask-docker-app
+```powershell
+ruff check monitor tests
 ```
 
-Open:
+The current tests cover EC2, S3, RDS, CloudWatch summaries and health evaluation.
+
+## Docker
+
+Build the image:
+
+```powershell
+docker build -t aws-cloud-infrastructure-monitor:1.0 .
+```
+
+Run it:
+
+```powershell
+docker run --rm -e AWS_REGION=ap-south-1 aws-cloud-infrastructure-monitor:1.0
+```
+
+The container must have access to valid AWS credentials through the environment or an appropriate AWS credential mechanism. Do not hard-code credentials into the image.
+
+## Design
+
+The application separates AWS collection, data models, health logic and reporting:
 
 ```text
-http://localhost:5000
+monitor/
+├── config.py
+├── models.py
+├── health.py
+├── main.py
+├── aws/
+│   ├── ec2.py
+│   ├── s3.py
+│   ├── rds.py
+│   ├── cloudwatch.py
+│   └── costs.py
+└── reports/
+    ├── console.py
+    └── json_report.py
 ```
 
-### 7. Terraform
+This keeps the code modular and makes individual components easier to test and extend.
 
-Infrastructure as Code practical using Terraform and AWS.
+## Current Capabilities
 
-**Topics**
-- Infrastructure as Code
-- Terraform configuration
-- AWS provider
-- AWS resource provisioning
-- `terraform init`
-- `terraform plan`
-- Terraform outputs
-- Terraform and Python integration
+- Real AWS API integration with Boto3
+- Read-only IAM policy
+- EC2 monitoring
+- S3 inventory summary
+- RDS monitoring
+- CloudWatch alarm inspection
+- Cost Explorer integration
+- Console reporting
+- JSON reporting
+- Pytest unit tests
+- Ruff linting
+- Docker support
+- Environment-based configuration
 
-**Directory**
-- `terraform-practical/`
+## Future Improvements
 
-**Files**
-- `main.tf`
-- `terraform_output.py`
-- `.terraform.lock.hcl`
+- Scheduled monitoring
+- SNS/email notifications
+- Historical report storage
+- Additional CloudWatch metrics
+- EC2 CPU and status checks
+- RDS CPU/storage monitoring
+- S3 storage/object statistics
+- Web dashboard
+- GitHub Actions CI
+- Automated container publishing
+- Infrastructure-as-code deployment
+- Multi-region monitoring
 
-**Workflow**
+## Cloud Labs
+
+The repository also contains earlier AWS/cloud practical work. These will be grouped under:
 
 ```text
-main.tf
-  ↓
-terraform init
-  ↓
-terraform plan
-  ↓
-terraform apply
-  ↓
-AWS Resources
-  ↓
-terraform output
+labs/
 ```
 
-### 8. Terraform + Python Integration
-
-The project demonstrates how Python can consume Terraform output.
-
-**File**
-- `terraform-practical/terraform_output.py`
-
-The script uses Python's `subprocess` module to run:
-
-```bash
-terraform output -json
-```
-
-It then parses the JSON response and reads Terraform output values.
-
-**Concept**
+so the repository clearly separates the main application from learning exercises.
 
 ```text
-Terraform
-    ↓
-terraform output -json
-    ↓
-subprocess
-    ↓
-JSON
-    ↓
-Python
-    ↓
-Automation
-```
+Main Project
+└── AWS Cloud Infrastructure Monitor
 
-### 9. AWS CloudFormation
-
-Infrastructure as Code practice using an AWS CloudFormation YAML template.
-
-**File**
-- `template.yaml`
-
-CloudFormation provides a declarative way to describe AWS infrastructure.
-
-```text
-CloudFormation YAML
-        ↓
-   CloudFormation
-        ↓
-    AWS Resources
-```
-
-### 10. Python + Boto3
-
-Python and Boto3 are used throughout the repository to communicate with AWS services through APIs.
-
-**Services practiced**
-- EC2
-- S3
-- CloudWatch
-- Cost Explorer
-
-**General model**
-
-```text
-Python Script
-     ↓
-   Boto3
-     ↓
-  AWS API
-     ↓
-AWS Service
-```
-
-### 11. Python OOP
-
-Python object-oriented programming practice supporting larger automation projects.
-
-**File**
-- `cloud_oop.py`
-
-### 12. API / Testing Practice
-
-Additional API and testing experimentation.
-
-**File**
-- `testingapi.py`
-
-## Security
-
-Sensitive AWS credentials and private keys are intentionally excluded from this repository.
-
-The `.gitignore` protects files such as:
-
-```text
-*.csv
-*.pem
-.aws/
-.env
-Terraform state files
-```
-
-Never commit the following to a public repository:
-
-- AWS access keys
-- AWS secret keys
-- Private keys
-- `.pem` files
-- Passwords
-- API tokens
-- `.env` files containing secrets
-- Terraform state files containing sensitive information
-
-Use secure credential mechanisms such as AWS CLI credential configuration, environment variables, IAM roles, or a secrets-management solution.
-
-## Cost Awareness
-
-Cloud resources can generate charges while running.
-
-During practical work, cost awareness is treated as an important part of learning AWS.
-
-Approaches include:
-
-- Using free-tier-eligible resources where applicable
-- Running resources only when required
-- Stopping or terminating resources after practicals
-- Using LocalStack for suitable local simulations
-- Reviewing costs with Cost Explorer
-
-Always verify current AWS pricing and Free Tier conditions before deploying resources.
-
-## Key Learning Areas
-
-### Compute
-- Amazon EC2
-
-### Storage
-- Amazon S3
-- Object storage
-- Backup automation
-
-### Monitoring
-- Amazon CloudWatch
-- Metrics
-
-### Cost Management
-- AWS Cost Explorer
-- Service-level cost reporting
-
-### Networking
-- Application Load Balancer concepts
-- Backend servers
-- Target health
-- Request distribution
-
-### Automation
-- Python
-- Boto3
-- AWS APIs
-- Terraform output integration
-
-### Infrastructure as Code
-- Terraform
-- AWS CloudFormation
-
-### Containers
-- Docker
-- Docker images
-- Docker containers
-- Flask applications
-- Port mapping
-
-### Development
-- Git
-- GitHub
-- PowerShell
-
-## Overall Learning Flow
-
-```text
-AWS Fundamentals
-       ↓
-Python + Boto3
-       ↓
-AWS Automation
-       ↓
-Monitoring & Cost Management
-       ↓
-Docker + Flask
-       ↓
-Infrastructure as Code
-       ↓
-Terraform + CloudFormation
-       ↓
-Load Balancing
-       ↓
-Cloud Architecture
-       ↓
-Deployment & CI/CD
-```
-
-## Future Capstone Work
-
-Planned areas for the larger cloud capstone include:
-
-- Custom VPC
-- Public and private subnets
-- EC2 web/application tier
-- RDS database tier
-- Auto Scaling
-- CloudWatch alarms
-- IAM and security best practices
-- CI/CD
-- GitHub Actions
-- ECS concepts
-- Three-tier architecture
-
-These are future learning/capstone items and are not presented as completed in this repository.
-
-## Learning Objective
-
-The goal of this repository is to move from AWS theory to practical implementation by combining:
-
-```text
-Cloud Services
-      +
-Python Automation
-      +
-Infrastructure as Code
-      +
-Containers
-      +
-Monitoring
-      +
-Cost Awareness
-      +
-Version Control
+Labs
+├── EC2
+├── S3
+├── CloudWatch
+├── Terraform
+├── CloudFormation
+├── Docker
+├── ALB
+├── Boto3
+└── Other AWS practicals
 ```
 
 ## Author
 
-**Abhiingit**
+**Abhijeet Pratap Singh**
 
-GitHub: https://github.com/Abhiingit/aws-cloud-practicals
+Computer Science & Engineering  
+AWS • Cloud • DevOps • Python
 
----
+## License
 
-⭐ This repository is part of my ongoing cloud-computing learning journey.
+Educational and portfolio project.

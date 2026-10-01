@@ -30,3 +30,8 @@ docker-practical/load-balancer-demo/
 monitor/reports/latest.json
 
 linux-log-analyzer/
+
+# Local AWS credentials and private keys
+*_accessKeys.csv
+*_credentials.csv
+*.pem
