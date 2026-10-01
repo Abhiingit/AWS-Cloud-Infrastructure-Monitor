@@ -27,3 +27,6 @@ linux-log-analyzer/reports/python-analysis.txt
 linux-log-analyzer/scripts/log_analyzer.py
 server-health-monitor/
 docker-practical/load-balancer-demo/
+monitor/reports/latest.json
+
+linux-log-analyzer/
