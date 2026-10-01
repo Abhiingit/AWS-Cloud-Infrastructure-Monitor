@@ -19,4 +19,11 @@ tempCodeRunnerFile.py
 
 # Environment/secrets
 .env
-.env.*
+.env.*docker-practical/load-balancer-demo/
+docker-practical/multistagedockerfile.txt
+docker_capstone/
+python-postgres-compose/
+linux-log-analyzer/reports/python-analysis.txt
+linux-log-analyzer/scripts/log_analyzer.py
+server-health-monitor/
+docker-practical/load-balancer-demo/
